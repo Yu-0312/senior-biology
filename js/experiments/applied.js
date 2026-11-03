@@ -338,8 +338,7 @@
         for (let d = 0; d <= 14; d++) {
           const tot = Math.max(1e-12, S + R);
           f.push(R / tot * 100); lgN.push(Math.log10(Math.max(1e-3, tot)));
-          const on = d < drugDays;
-          S *= on ? 0.05 : 1.9; R *= on ? 0.90 : 1.7;
+          S *= d < drugDays ? 0.05 : 1.9; R *= d < drugDays ? 0.90 : 1.7;
           const t2 = S + R;
           if (t2 > 1e6) { S *= 1e6 / t2; R *= 1e6 / t2; }
         }
@@ -403,8 +402,7 @@
         const mk = (days, color, dash) => {
           const d = evolve(days, f0), pts = [];
           for (let i = 0; i <= 14; i++) pts.push([i, d.f[i]]);
-          return { pts, color, dash };
-        };
+          return { pts, color, dash }; };
         CK.plot(chart, {
           x0: 0, x1: 14, y0: 0, y1: 100, xticks: [7, 14], yticks: [25, 50, 75],
           xlabel: "天數", ylabel: "抗藥頻率（%）",
@@ -449,8 +447,7 @@
           D.line(ctx, dx - gap / 2, top, dx - gap / 2, bot, "rgba(140,180,205,0.95)", 3);
           D.line(ctx, dx + gap / 2, top, dx + gap / 2, bot, "rgba(140,180,205,0.95)", 3);
           D.line(ctx, vx, top, vx, bot + 8, "rgba(220,120,120,0.5)", 6);
-          D.text(ctx, "集尿管", dx, top - 12, { color: PL.col("text-dim"), size: 10, align: "center" });
-          D.text(ctx, "腎靜脈", vx + 4, top - 12, { color: PL.col("text-faint"), size: 9.5 });
+          D.text(ctx, "集尿管", dx, top - 12, { color: PL.col("text-dim"), size: 10, align: "center" }); D.text(ctx, "腎靜脈", vx + 4, top - 12, { color: PL.col("text-faint"), size: 9.5 });
           const nD = Math.round(eff * adh * 8);
           for (let i = 0; i < nD; i++) {
             const yd = top + 14 + (i + 0.5) / Math.max(1, nD) * (bot - top - 28);
@@ -489,8 +486,7 @@
       PL.ui.presets(ui.L.controls, { label: "情境", options: [
         { label: "劇烈運動後缺水", apply: () => { adhS.set(95); respSel.set("normal"); ui.redraw(); } },
         { label: "喝下 2 L 水", apply: () => { adhS.set(10); respSel.set("normal"); ui.redraw(); } },
-        { label: "腎源性尿崩症", apply: () => { adhS.set(80); respSel.set("resist"); ui.redraw(); } }
-      ] });
+        { label: "腎源性尿崩症", apply: () => { adhS.set(80); respSel.set("resist"); ui.redraw(); } } ] });
       const verdict = PL.ui.verdict(ui.L.controls, { label: "恆定判定", tone: "info" });
       const rGFR = PL.ui.readout(ui.L.readouts, { label: "每日過濾量", unit: "L" });
       const rRe = PL.ui.readout(ui.L.readouts, { label: "ADH 段再吸收", unit: "L" });
@@ -687,8 +683,7 @@
       PL.ui.presets(ui.L.controls, { label: "情境", options: [
         { label: "Bt 棉花田", apply: () => { techSel.set("gmo"); sS.set(80); chk.set(true); ui.redraw(); } },
         { label: "複製冠軍乳牛", apply: () => { techSel.set("clone"); sS.set(70); chk.set(true); ui.redraw(); } },
-        { label: "遺傳疾病基因治療", apply: () => { techSel.set("therapy"); sS.set(40); chk.set(true); ui.redraw(); } }
-      ] });
+        { label: "遺傳疾病基因治療", apply: () => { techSel.set("therapy"); sS.set(40); chk.set(true); ui.redraw(); } } ] });
       const verdict = PL.ui.verdict(ui.L.controls, { label: "倫理判定", tone: "info" });
       const rBene = PL.ui.readout(ui.L.readouts, { label: "效益指標" });
       const rRisk = PL.ui.readout(ui.L.readouts, { label: "風險量化" });
