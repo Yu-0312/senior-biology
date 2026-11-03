@@ -56,7 +56,7 @@ R.section("沒有播放鍵的實驗，操作說明要寫出怎麼開始");
    * 以及以滴定曲線為主的滴定實驗。
    */
   const checks = [
-    ["microscope", /播放/],
+    ["life-phenomena", /播放/],
     ["cell-observation", /調整參數|滑桿|參數/],
     ["microscope", /調整參數|滑桿|參數|播放/]
   ];
