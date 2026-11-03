@@ -101,7 +101,10 @@
           const { ctx, W, H } = ui.cv; CK.bench(ui.cv);
           const obj = objSel.get(), mag = OBJ_Mags[obj];
           const focus = focusS.get();
-          const clarity = Math.max(0, 1 - Math.abs(focus - 0.55) * 2.4);
+          // 對焦平面：前後兩層細胞，對焦輪決定哪一層清楚（0→前層、1→後層）
+          const frontA = Math.max(0, 1 - Math.abs(focus - 0.30) * 2.6);
+          const backA = Math.max(0, 1 - Math.abs(focus - 0.78) * 2.6);
+          const clarity = Math.max(frontA, backA);
           const viewD = 18 - Math.log10(mag) * 3.4; // 視野直徑（mm，示意）
           // 顯微鏡
           CK.microscope(ctx, W * 0.24, H * 0.80, H * 0.0042, {
@@ -115,16 +118,23 @@
           const cells = Math.round(140 / mag * 20);
           const cellR = vr * (0.06 + mag / 400 * 0.16);
           const n = Math.max(4, Math.min(24, cells));
-          for (let i = 0; i < n; i++) {
-            const a = i * 2.39996, rr = vr * 0.72 * Math.sqrt((i + 0.5) / n);
-            const x = vx + Math.cos(a) * rr, y = vy + Math.sin(a) * rr;
-            ctx.save();
-            ctx.globalAlpha = 0.35 + clarity * 0.6;
-            D.rect(ctx, x - cellR * 1.4, y - cellR, cellR * 2.8, cellR * 2, { stroke: "rgba(70,110,80,0.9)", width: 1.4, r: cellR * 0.4 });
-            D.disc(ctx, x, y, cellR * 0.32, { fill: "rgba(120,80,160,0.5)" });
-            ctx.restore();
-          }
-          if (clarity < 0.4) D.text(ctx, "未對焦：旋轉細調節輪", vx, vy + vr + 18, { color: PL.col("warn"), size: 11, align: "center" });
+          // 前層：表皮細胞（對焦 0.30）；後層：下方海綿組織（對焦 0.78）
+          const layer = (alpha, dy, stroke, fill) => {
+            if (alpha < 0.06) return;
+            for (let i = 0; i < n; i++) {
+              const a = i * 2.39996, rr = vr * 0.72 * Math.sqrt((i + 0.5) / n);
+              const x = vx + Math.cos(a) * rr + (dy ? 6 : 0), y = vy + Math.sin(a) * rr + dy;
+              ctx.save();
+              ctx.globalAlpha = 0.2 + alpha * 0.75;
+              D.rect(ctx, x - cellR * 1.4, y - cellR, cellR * 2.8, cellR * 2, { stroke, width: 1.4, r: cellR * 0.4 });
+              D.disc(ctx, x, y, cellR * 0.32, { fill });
+              ctx.restore();
+            }
+          };
+          layer(frontA, -4, "rgba(70,110,80,0.9)", "rgba(120,80,160,0.5)");
+          layer(backA, 10, "rgba(60,95,120,0.9)", "rgba(90,130,180,0.45)");
+          if (clarity < 0.45) D.text(ctx, "未對焦：旋轉細調節輪", vx, vy + vr + 18, { color: PL.col("warn"), size: 11, align: "center" });
+          else if (backA > frontA) D.text(ctx, "對焦到下層海綿組織", vx, vy + vr + 18, { color: PL.col("text-faint"), size: 10.5, align: "center" });
           D.text(ctx, "目鏡 10×  物鏡 " + (mag / 10) + "×", vx, vy - vr - 10, { color: PL.col("text-dim"), size: 11, align: "center" });
           rMag.set(mag, 0); rView.set(viewD, 1); rClarity.set(clarity, 2);
           rCells.set(n, 0);
