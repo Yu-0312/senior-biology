@@ -33,7 +33,7 @@
         aspect: 0.60,
         draw() {
           const { ctx, W, H } = ui.cv; CK.bench(ui.cv);
-          const stg = stageSel.get(), st = STAGES[stg], adv = advS.get(), xo = Math.round(xoS.get());
+          const stg = +stageSel.get(), st = STAGES[stg], adv = advS.get(), xo = Math.round(xoS.get());
           const cc = { x: W * 0.30, y: H * 0.46 }, r1 = H * 0.29;
           const cellPos = i => st.cells === 1 ? [{ x: cc.x, y: cc.y }, r1]
             : st.cells === 2 ? [{ x: cc.x + (i ? 1 : -1) * r1 * 0.66, y: cc.y }, r1 * 0.58]
@@ -68,8 +68,7 @@
                 chrom(c.x - d, c.y, r * 0.30, ca, cb, 1); chrom(c.x + d, c.y, r * 0.30, ca, cb, 1);
                 chrom(c.x - d, c.y + r * 0.34, r * 0.19, cb, ca, 1); chrom(c.x + d, c.y + r * 0.34, r * 0.19, cb, ca, 1);
               } else {
-                chrom(c.x - r * 0.22, c.y - r * 0.14, r * 0.30, ca, cb);
-                chrom(c.x + r * 0.22, c.y + r * 0.14, r * 0.19, cb, ca);
+                chrom(c.x - r * 0.22, c.y - r * 0.14, r * 0.30, ca, cb); chrom(c.x + r * 0.22, c.y + r * 0.14, r * 0.19, cb, ca);
               }
             });
           } else cells.forEach(([c, r], i) => { // 四個配子：2² 種組合
@@ -129,7 +128,7 @@
             for (let k = 0; k <= 12; k++) { const u = k / 12; ctx.lineTo(x - sz - u * sz * 8, y + Math.sin(u * 8 + t * 6 + ph) * sz * 1.5 * u); }
             ctx.strokeStyle = "rgba(90,115,145,0.8)"; ctx.lineWidth = 1.1; ctx.stroke(); ctx.restore();
           };
-          if (mode === "compare") { // 配子大小比較
+          if (mode === "compare") { // 配子大小比較（同一比例尺）
             CK.panel(ctx, W * 0.05, H * 0.12, W * 0.90, H * 0.68, "配子大小比較（同一比例尺）");
             const cy2 = H * 0.44;
             D.disc(ctx, W * 0.26, cy2, H * 0.19, { fill: "rgba(255,214,165,0.9)", stroke: "rgba(190,120,60,0.9)", width: 2 });
@@ -159,7 +158,7 @@
             if (xj > ex - er * 2.2) near++;
             sperm(xj, yj, u[0] * 9, 3.2);
           }
-          if (fused) { // 卵膜封鎖 + 雄原核
+          if (fused) { // 卵膜封鎖＋雄原核
             D.ring(ctx, ex, ey, er + 2, "rgba(224,92,82,0.9)", 3.4);
             const mx = lerp(ex - er * 0.7, ex - 9, clamp((prog - 0.6) / 0.4, 0, 1));
             D.disc(ctx, mx, ey + 7, 6, { fill: "rgba(90,130,190,0.95)" });
@@ -185,10 +184,8 @@
         ],
         rule: "阻止多精入卵靠的是卵膜變化（皮質顆粒反應），不是精子「排隊禮讓」——多精入卵的胚胎無法正常發育。"
       });
-      const rNear = PL.ui.readout(ui.L.readouts, { label: "卵周精子數" });
-      const rIn = PL.ui.readout(ui.L.readouts, { label: "已入卵精子數" });
-      const rZyg = PL.ui.readout(ui.L.readouts, { label: "合子染色體數" });
-      const rProg = PL.ui.readout(ui.L.readouts, { label: "受精進度", unit: "%" });
+      const rNear = PL.ui.readout(ui.L.readouts, { label: "卵周精子數" }), rIn = PL.ui.readout(ui.L.readouts, { label: "已入卵精子數" });
+      const rZyg = PL.ui.readout(ui.L.readouts, { label: "合子染色體數" }), rProg = PL.ui.readout(ui.L.readouts, { label: "受精進度", unit: "%" });
       return { stop() { ui.stop(); } };
     }
   });
@@ -202,6 +199,7 @@
         { name: "AA × aa", m: ["A"], f: ["a"], verdict: "後代全顯性：親代皆純合，子代全為 Aa", tone: "info" },
         { name: "AA × Aa", m: ["A"], f: ["A", "a"], verdict: "後代全顯性，但一半是帶隱性基因的 Aa", tone: "info" }
       ];
+      // P(顯性) = 1 − P(兩配子都帶 a)
       const pDomOf = cr => 1 - (cr.m.filter(g => g === "a").length / cr.m.length) * (cr.f.filter(g => g === "a").length / cr.f.length);
       let lastObs = 0.5;
       const ui = CK.scaffold(root, {
@@ -248,10 +246,8 @@
         { label: "自交 3:1", apply: () => { crSel.set("0"); nS.set(200); } },
         { label: "測交 1:1", apply: () => crSel.set("1") },
         { label: "大樣本", apply: () => { crSel.set("0"); nS.set(2000); } }] });
-      const rTheo = PL.ui.readout(ui.L.readouts, { label: "理論表現型比" });
-      const rGeno = PL.ui.readout(ui.L.readouts, { label: "基因型格數" });
-      const rObs = PL.ui.readout(ui.L.readouts, { label: "模擬顯性比例", unit: "%" });
-      const rN = PL.ui.readout(ui.L.readouts, { label: "模擬樣本數", unit: "株" });
+      const rTheo = PL.ui.readout(ui.L.readouts, { label: "理論表現型比" }), rGeno = PL.ui.readout(ui.L.readouts, { label: "基因型格數" });
+      const rObs = PL.ui.readout(ui.L.readouts, { label: "模擬顯性比例", unit: "%" }), rN = PL.ui.readout(ui.L.readouts, { label: "模擬樣本數", unit: "株" });
       const vr = PL.ui.verdict(ui.L.readouts, { label: "判定" });
       const chart = ui.chart("樣本數與機率偏離", "虛線是理論值 ±2σ（約 95% 落點範圍）。樣本越大範圍越窄——小樣本偏離理論是正常的機率波動。");
       const drawChart = () => {
@@ -289,7 +285,7 @@
           const gam = gamOf(r), exp = expOf(r);
           CK.panel(ctx, W * 0.04, H * 0.11, W * 0.38, H * 0.56, "基因位置（聯鎖群）");
           const chx = W * 0.13, chy = H * 0.28, cs = 24;
-          CK.chromosome(ctx, chx, chy, cs, { color: "#e57373" });   // A 與 B 在同一條上
+          CK.chromosome(ctx, chx, chy, cs, { color: "#e57373" });   // A 與 B 在同一條上（連鎖）
           CK.chromosome(ctx, chx + 40, chy, cs, { color: "#5b8def" });
           if (r > 0) { ctx.save(); ctx.lineCap = "round"; const t1 = 0.35, t2 = 0.35 + r * 1.1;
             D.line(ctx, chx - 0.5 * cs * t1, chy - cs * t1, chx - 0.5 * cs * t2, chy - cs * t2, "#5b8def", 7); ctx.restore(); }
@@ -353,10 +349,8 @@
         { label: "完全連鎖", apply: () => rS.set(0) },
         { label: "部分連鎖", apply: () => rS.set(20) },
         { label: "獨立分配", apply: () => rS.set(50) }] });
-      const rR = PL.ui.readout(ui.L.readouts, { label: "互換率", unit: "%" });
-      const rPar = PL.ui.readout(ui.L.readouts, { label: "親本型觀察比例", unit: "%" });
-      const rDev = PL.ui.readout(ui.L.readouts, { label: "與 9:3:3:1 最大偏差", unit: "百分點" });
-      const rN = PL.ui.readout(ui.L.readouts, { label: "模擬樣本數", unit: "株" });
+      const rR = PL.ui.readout(ui.L.readouts, { label: "互換率", unit: "%" }), rPar = PL.ui.readout(ui.L.readouts, { label: "親本型觀察比例", unit: "%" });
+      const rDev = PL.ui.readout(ui.L.readouts, { label: "與 9:3:3:1 最大偏差", unit: "百分點" }), rN = PL.ui.readout(ui.L.readouts, { label: "模擬樣本數", unit: "株" });
       const vr = PL.ui.verdict(ui.L.readouts, { label: "判定" });
       return { stop() { ui.stop(); } };
     }
@@ -416,10 +410,8 @@
       PL.ui.presets(ui.L.controls, { label: "情境", options: [
         { label: "測交方格", apply: () => { p1Sel.set("Aa"); p2Sel.set("aa"); } },
         { label: "AA × Aa", apply: () => { p1Sel.set("AA"); p2Sel.set("Aa"); } }] });
-      const rPD = PL.ui.readout(ui.L.readouts, { label: "P(顯性表現型)", unit: "%" });
-      const rOD = PL.ui.readout(ui.L.readouts, { label: "模擬顯性", unit: "%" });
-      const rPH = PL.ui.readout(ui.L.readouts, { label: "P(異型 Aa)", unit: "%" });
-      const rOH = PL.ui.readout(ui.L.readouts, { label: "模擬異型", unit: "%" });
+      const rPD = PL.ui.readout(ui.L.readouts, { label: "P(顯性表現型)", unit: "%" }), rOD = PL.ui.readout(ui.L.readouts, { label: "模擬顯性", unit: "%" });
+      const rPH = PL.ui.readout(ui.L.readouts, { label: "P(異型 Aa)", unit: "%" }), rOH = PL.ui.readout(ui.L.readouts, { label: "模擬異型", unit: "%" });
       return { stop() { ui.stop(); } };
     }
   });
@@ -445,7 +437,7 @@
           const prob = { A: 0, B: 0, AB: 0, O: 0 };
           Object.keys(raw).forEach(k => { prob[phOf(k)] += raw[k] / tot; });
           D.text(ctx, "A 與 B 共顯性（IᴬIᴮ = AB 型）；i 為隱性", W * 0.25, H * 0.75, { color: PL.col("text-faint"), size: 10, align: "center" });
-          const rbc = (x, y, kind) => { // 紅血球與抗原
+          const rbc = (x, y, kind) => { // 紅血球與表面抗原
             D.disc(ctx, x, y, 13, { fill: "rgba(224,92,82,0.9)" });
             const nub = (dx, dy, c) => D.disc(ctx, x + dx, y + dy, 2.6, { fill: c });
             if (kind === "A" || kind === "AB") { nub(-5, -4, "#ffd54f"); nub(5, -4, "#ffd54f"); }
@@ -491,10 +483,8 @@
         { label: "A×B 生出四種", apply: () => { mSel.set("IAi"); fSel.set("IBi"); } },
         { label: "AB × O（誤解情境）", apply: () => { mSel.set("IAIB"); fSel.set("ii"); } },
         { label: "O × O", apply: () => { mSel.set("ii"); fSel.set("ii"); } }] });
-      const rPoss = PL.ui.readout(ui.L.readouts, { label: "子代可能血型" });
-      const rAB = PL.ui.readout(ui.L.readouts, { label: "AB 型機率", unit: "%" });
-      const rO = PL.ui.readout(ui.L.readouts, { label: "O 型機率", unit: "%" });
-      const rImp = PL.ui.readout(ui.L.readouts, { label: "不可能出現的血型" });
+      const rPoss = PL.ui.readout(ui.L.readouts, { label: "子代可能血型" }), rImp = PL.ui.readout(ui.L.readouts, { label: "不可能出現的血型" });
+      const rAB = PL.ui.readout(ui.L.readouts, { label: "AB 型機率", unit: "%" }), rO = PL.ui.readout(ui.L.readouts, { label: "O 型機率", unit: "%" });
       const vr = PL.ui.verdict(ui.L.readouts, { label: "判定" });
       return { stop() { ui.stop(); } };
     }
@@ -525,9 +515,7 @@
             if (k.includes("Y")) { pSon += p; if (k.includes("Xᵇ")) pCbSon += p; }
             else { pDau += p; if (k === "XᵇXᵇ") pCbDau += p; else if (k.includes("Xᵇ")) pCarDau += p; }
           });
-          const OUT = [["正常男", pSon - pCbSon, "male", 0, 0], ["色盲男", pCbSon, "male", 1, 0],
-                       ["正常女", pDau - pCbDau - pCarDau, "female", 0, 0], ["帶因女", pCarDau, "female", 0, 1],
-                       ["色盲女", pCbDau, "female", 1, 0]];
+          const OUT = [["正常男", pSon - pCbSon], ["色盲男", pCbSon], ["正常女", pDau - pCbDau - pCarDau], ["帶因女", pCarDau], ["色盲女", pCbDau]];
           const rr = seeded(hashKey(mk, fk, n)), ncb = { m: 0, f: 0 };
           for (let i = 0; i < n; i++) {
             let u = rr(), k = 0, acc = 0;
@@ -547,9 +535,11 @@
           D.text(ctx, "正常 " + PL.fmt((pDau - pCbDau - pCarDau) * 100, 0) + "%", W * 0.55, H * 0.63, { color: PL.col("text-dim"), size: 10, align: "center" });
           D.text(ctx, "帶因 " + PL.fmt(pCarDau * 100, 0) + "%", W * 0.70, H * 0.63, { color: "#ffb74d", size: 10, align: "center" });
           D.text(ctx, "色盲 " + PL.fmt(pCbDau * 100, 0) + "%", W * 0.85, H * 0.63, { color: "#e57373", size: 10, align: "center" });
-          D.text(ctx, "模擬 " + n + " 名子女：色盲男 " + ncb.m + "、色盲女 " + ncb.f, W * 0.73, H * 0.72, { color: PL.col("text-faint"), size: 9.5, align: "center" });
-          CK.legend(ctx, W * 0.09, H * 0.75, [
-            { color: "#5b8def", label: "Xᴮ（正常等位基因）" }, { color: "#e57373", label: "Xᵇ（色盲等位基因）" }], 16);
+          D.text(ctx, "模擬 " + n + " 名子女", W * 0.73, H * 0.70, { color: PL.col("text-faint"), size: 9.5, align: "center" });
+          CK.counter(ctx, W * 0.55, H * 0.75, W * 0.17, Math.min(ncb.m + ncb.f, 48), { color: "#e57373", r: 3.2 });
+          CK.counter(ctx, W * 0.76, H * 0.75, W * 0.17, Math.min(n - ncb.m - ncb.f, 48), { color: "#5b8def", r: 3.2 });
+          D.text(ctx, "色盲 " + (ncb.m + ncb.f) + " 人（紅點）／正常 " + (n - ncb.m - ncb.f) + " 人（藍點）", W * 0.73, H * 0.82, { color: PL.col("text-faint"), size: 9.5, align: "center" });
+          CK.legend(ctx, W * 0.09, H * 0.75, [{ color: "#5b8def", label: "Xᴮ（正常等位基因）" }, { color: "#e57373", label: "Xᵇ（色盲等位基因）" }], 16);
           rBS.set(pCbSon * 100, 0); rBD.set(pCbDau * 100, 0); rCD.set(pCarDau * 100, 0);
           rSim.set(n ? (ncb.m + ncb.f) / n * 100 : 0, 1);
           if (mk === "XBXb" && fk === "XBY") vr.set("帶因母 × 正常父：兒子 1/2 色盲——兒子的 X 一定來自母親", "warn");
@@ -575,10 +565,8 @@
         { label: "帶因母×正常父", apply: () => { mSel.set("XBXb"); fSel.set("XBY"); } },
         { label: "色盲父×正常母", apply: () => { mSel.set("XBXB"); fSel.set("XbY"); } },
         { label: "色盲母×正常父", apply: () => { mSel.set("XbXb"); fSel.set("XBY"); } }] });
-      const rBS = PL.ui.readout(ui.L.readouts, { label: "色盲兒子機率", unit: "%" });
-      const rBD = PL.ui.readout(ui.L.readouts, { label: "色盲女兒機率", unit: "%" });
-      const rCD = PL.ui.readout(ui.L.readouts, { label: "帶因女兒機率", unit: "%" });
-      const rSim = PL.ui.readout(ui.L.readouts, { label: "模擬色盲子女", unit: "%" });
+      const rBS = PL.ui.readout(ui.L.readouts, { label: "色盲兒子機率", unit: "%" }), rBD = PL.ui.readout(ui.L.readouts, { label: "色盲女兒機率", unit: "%" });
+      const rCD = PL.ui.readout(ui.L.readouts, { label: "帶因女兒機率", unit: "%" }), rSim = PL.ui.readout(ui.L.readouts, { label: "模擬色盲子女", unit: "%" });
       const vr = PL.ui.verdict(ui.L.readouts, { label: "判定" });
       return { stop() { ui.stop(); } };
     }
@@ -638,9 +626,8 @@
             CK.pedigreeDrop(ctx, j2, yIII - 13, kxs);
             cs.III.forEach((m, i) => CK.pedigreePerson(ctx, kxs[i], yIII, m.s, m.a, { s: 10, carrier: show && m.c, label: "III-" + (i + 1) }));
           }
-          CK.legend(ctx, W * 0.06, H * 0.09, [
-            { color: "#e57373", label: "患者（紅）" }, { color: "#ffb74d", label: "帶因（橙框，勾選顯示）" },
-            { color: PL.theme.shade(0.6), label: "正常（方形男、圓形女）" }], 15);
+          CK.legend(ctx, W * 0.06, H * 0.09, [{ color: "#e57373", label: "患者（紅）" },
+            { color: "#ffb74d", label: "帶因（橙框，勾選顯示）" }, { color: PL.theme.shade(0.6), label: "正常（方形男、圓形女）" }], 15);
           CK.panel(ctx, W * 0.66, H * 0.12, W * 0.30, H * 0.46, "判讀線索");
           cs.clues.forEach((c, i) => {
             D.disc(ctx, W * 0.69, H * 0.20 + i * 44, 3.5, { fill: PL.col("accent") });
@@ -669,8 +656,7 @@
         ],
         rule: "「女生患病但父親正常」直接排除性聯隱性——這一條是譜系題最快的一刀，考試先找它。"
       });
-      const rPar = PL.ui.readout(ui.L.readouts, { label: "患者雙親表現型" });
-      const rGen = PL.ui.readout(ui.L.readouts, { label: "出現方式" });
+      const rPar = PL.ui.readout(ui.L.readouts, { label: "患者雙親表現型" }), rGen = PL.ui.readout(ui.L.readouts, { label: "出現方式" });
       const rGuess = PL.ui.readout(ui.L.readouts, { label: "你的推論" });
       const vr = PL.ui.verdict(ui.L.readouts, { label: "判定" });
       return { stop() { ui.stop(); } };

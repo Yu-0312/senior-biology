@@ -65,8 +65,7 @@
           };
           pairDemo(H * 0.28, "A", "T", 2); pairDemo(H * 0.47, "G", "C", 3);
           CK.legend(ctx, W * 0.575, H * 0.62, [{ color: "#e57373", label: "A 與 T 先分開(鍵少)" }, { color: "#81c784", label: "G 與 C 撐得久(鍵多)" }], 17);
-          // 讀數
-          const nHB = seq.reduce((s, pr) => s + (pr[0] === "G" || pr[0] === "C" ? 3 : 2), 0);
+          const nHB = seq.reduce((s, pr) => s + (pr[0] === "G" || pr[0] === "C" ? 3 : 2), 0); // 氫鍵總數
           rGC.set(gc, 0); rHB.set(nHB, 0); rBroken.set(Math.round(force * 0.85 * 16), 0); rState.set(force > 0.9 ? "完全變性(兩股分離)" : force > 0.08 ? "局部解開" : "雙股完整");
         }
       });
@@ -250,7 +249,7 @@
         draw(dt, t) {
           const { ctx, W, H } = ui.cv; CK.bench(ui.cv);
           const sm = SAMPLES[sSel.get()], p = progS.get() / 100, showAc = acC.get();
-          const codons = sm.mrna.split(" "), n = codons.length;
+          const codons = sm.mrna.split(" "), n = codons.length; // 樣本都從 AUG 起、以終止密碼子收尾
           const done = clamp(Math.floor(p * n), 0, n), cur = Math.min(done, n - 1), aa = CODON[codons[cur]];
           // mRNA 條與密碼子
           const x0 = W * 0.10, yM = H * 0.22, cw2 = (W * 0.56) / n, hM = H * 0.11;
@@ -320,7 +319,7 @@
         draw() {
           const { ctx, W, H } = ui.cv; CK.bench(ui.cv);
           const prom = promS.get(), md = MODES[modeSel.get()];
-          const mRNA = Math.round(prom * md.mult * 0.4), protein = Math.round(mRNA * 2.2), pig = clamp(protein / 160, 0, 1);
+          const mRNA = Math.round(prom * md.mult * 0.4), protein = Math.round(mRNA * 2.2), pig = clamp(protein / 160, 0, 1); // 中心法則的量流
           // 中心法則四站:基因 → mRNA → 蛋白質 → 性狀
           const stages = [
             { name: "基因(DNA)", count: 1, max: 1, col: "rgba(90,130,170,0.95)", unit: "段" },
@@ -369,8 +368,7 @@
       const drawChart = () => CK.plot(chart, {
         x0: 0, x1: 100, y0: 0, y1: 100, xlabel: "啟動子活性 (%)", ylabel: "黑色素量 (%)",
         series: [
-          { fn: v => clamp(v * 1.8 * 0.55, 0, 1) * 100, color: "#66bb6a" },
-          { fn: v => clamp(v * 0.55, 0, 1) * 100, color: PL.col("accent") },
+          { fn: v => clamp(v * 1.8 * 0.55, 0, 1) * 100, color: "#66bb6a" }, { fn: v => clamp(v * 0.55, 0, 1) * 100, color: PL.col("accent") },
           { fn: v => clamp(v * 0.35 * 0.55, 0, 1) * 100, color: "#ef8829" }
         ],
         marks: [{ dot: [promS.get(), clamp(promS.get() * MODES[modeSel.get()].mult * 0.55, 0, 1) * 100], color: PL.col("accent-2"), label: "目前" }]
@@ -384,15 +382,14 @@
   /* 基因突變的類型 */
   PL.register("mutation", {
     build(root) {
-      const ORIG = "ATGCCCGAGTTTGGC".split("");
+      const ORIG = "ATGCCCGAGTTTGGC".split(""); // 原序列轉譯:Met-Pro-Glu-Phe-Gly
       const ORIG_AA = ["Met", "Pro", "Glu", "Phe", "Gly"];
       const KINDS = { none: "原序列(對照)", sub: "置換一個鹼基", ins: "插入一個鹼基", del: "刪除一個鹼基", del3: "刪除三個鹼基" };
       const ui = CK.scaffold(root, {
         aspect: 0.58,
         draw() {
           const { ctx, W, H } = ui.cv; CK.bench(ui.cv);
-          const kind = kindSel.get(), pos = Math.round(posS.get()) - 1;
-          const dna = ORIG.slice();
+          const kind = kindSel.get(), pos = Math.round(posS.get()) - 1, dna = ORIG.slice();
           if (kind === "sub") dna[pos] = { A: "T", T: "A", G: "C", C: "G" }[dna[pos]];
           else if (kind === "ins") dna.splice(pos, 0, "A");
           else if (kind === "del") dna.splice(pos, 1);
@@ -475,8 +472,7 @@
         draw() {
           const { ctx, W, H } = ui.cv; CK.bench(ui.cv);
           const cs = CASES[caseSel.get()];
-          const run = clamp(timeS.get() / 100 * (0.3 + voltS.get() / 150 * 0.7), 0, 1);
-          const lanes = cs.lanes.map(l => ({ label: l[0], bands: l[1] }));
+          const run = clamp(timeS.get() / 100 * (0.3 + voltS.get() / 150 * 0.7), 0, 1), lanes = cs.lanes.map(l => ({ label: l[0], bands: l[1] }));
           D.text(ctx, "DNA 帶負電:由負極往正極(下)跑", W * 0.07, H * 0.12, { color: PL.col("text-dim"), size: 10 });
           // 膠體本體
           CK.gelBox(ctx, { x: W * 0.07, y: H * 0.16, w: W * 0.52, h: H * 0.58 }, lanes, { running: run });
