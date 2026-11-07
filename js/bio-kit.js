@@ -280,7 +280,7 @@
     // 玻片玻璃：深色主題降低明度與不透明度，避免成為刺眼白塊
     const glass = PL.theme.isLight() ? "rgba(210,232,244,0.5)" : "rgba(150,180,205,0.20)";
     D.rect(ctx, cx - w / 2, cy - h / 2, w, h, { fill: glass, stroke: "rgba(140,180,205,0.9)", r: 2 });
-    if (label) D.text(ctx, label, cx, cy + h / 2 + 12, { color: PL.col("text-dim"), size: 10, align: "center" });
+    if (label) D.text(ctx, label, cx + w / 2 + 8, cy + 3, { color: PL.col("text-dim"), size: 9.5 });
     return { x: cx - w / 2, y: cy - h / 2, w, h };
   }
 

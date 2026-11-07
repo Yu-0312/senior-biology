@@ -239,11 +239,13 @@
           ctx.stroke(); ctx.restore();
           D.text(ctx, "主動脈壓波形", wx, wy + 12, { color: PL.col("text-faint"), size: 9.5 });
           CK.panel(ctx, W * 0.58, H * 0.12, W * 0.38, H * 0.64, "循環路徑");
-          D.text(ctx, "肺循環(小循環)", W * 0.60, H * 0.22, { color: "#4a90d9", size: 11.5, weight: "700" });
-          D.text(ctx, "右心室 → 肺動脈 → 肺泡 → 肺靜脈 → 左心房", W * 0.60, H * 0.28, { color: PL.col("text-dim"), size: 10.5 });
-          D.text(ctx, "體循環(大循環)", W * 0.60, H * 0.36, { color: "#d95555", size: 11.5, weight: "700" });
-          D.text(ctx, "左心室 → 主動脈 → 全身微血管 → 腔靜脈 → 右心房", W * 0.60, H * 0.42, { color: PL.col("text-dim"), size: 10.5 });
-          D.text(ctx, "兩個循環串聯:血先繞肺裝氧,再繞全身卸氧", W * 0.60, H * 0.50, { color: PL.col("text-dim"), size: 10.5 });
+          D.text(ctx, "肺循環(小循環)", W * 0.60, H * 0.20, { color: "#4a90d9", size: 11.5, weight: "700" });
+          D.text(ctx, "右心室 → 肺動脈 → 肺泡", W * 0.60, H * 0.255, { color: PL.col("text-dim"), size: 10 });
+          D.text(ctx, "→ 肺靜脈 → 左心房", W * 0.60, H * 0.305, { color: PL.col("text-dim"), size: 10 });
+          D.text(ctx, "體循環(大循環)", W * 0.60, H * 0.385, { color: "#d95555", size: 11.5, weight: "700" });
+          D.text(ctx, "左心室 → 主動脈 → 全身微血管", W * 0.60, H * 0.44, { color: PL.col("text-dim"), size: 10 });
+          D.text(ctx, "→ 腔靜脈 → 右心房", W * 0.60, H * 0.49, { color: PL.col("text-dim"), size: 10 });
+          D.text(ctx, "兩個循環串聯:血先繞肺裝氧,再繞全身卸氧", W * 0.60, H * 0.565, { color: PL.col("text-dim"), size: 10 });
           CK.badge(ctx, W * 0.77, H * 0.60, "冠狀循環:心肌自己的供血", "#b05555");
           D.text(ctx, "左心室壁最厚:要把血一路推到全身", W * 0.60, H * 0.68, { color: PL.col("text-faint"), size: 10 });
           const sv = 50 + con * 50, co = hr * sv / 1000;

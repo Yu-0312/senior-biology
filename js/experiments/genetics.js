@@ -298,7 +298,7 @@
             CK.meter(ctx, W * 0.12, gy, W * 0.17, 8, p * 2, { color: i % 3 ? "#8fb7d9" : "#e0a33a" });
             D.text(ctx, PL.fmt(p * 100, 0) + "%", W * 0.31, gy + 7, { color: PL.col("text-dim"), size: 10 });
           });
-          D.text(ctx, "配子頻率（互換率 r = " + rv + "% 決定重組型 Ab、aB 的比例）", W * 0.23, H * 0.64, { color: PL.col("text-faint"), size: 9.5, align: "center" });
+          D.text(ctx, "配子頻率（由互換率 r 決定）", W * 0.23, H * 0.64, { color: PL.col("text-faint"), size: 9.5, align: "center" });
           // 4×4 機率方格：格深＝該組合的機率
           CK.panel(ctx, W * 0.44, H * 0.11, W * 0.52, H * 0.56, "機率方格（格深＝該組合的機率）");
           const gx = W * 0.47, gy0 = H * 0.16, labW = 40, labH = 22;

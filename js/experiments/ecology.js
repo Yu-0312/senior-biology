@@ -390,7 +390,7 @@
         { id: "frog", label: "蛙", x: 0.12, y: 0.34, color: "rgba(239,136,41,0.9)" },
         { id: "snake", label: "蛇", x: 0.34, y: 0.34, color: "rgba(239,136,41,0.9)" },
         { id: "hawk", label: "鷹", x: 0.23, y: 0.12, color: "rgba(229,115,115,0.9)" },
-        { id: "decomp", label: "分解者", x: 0.46, y: 0.84, color: "rgba(161,136,127,0.9)" }
+        { id: "decomp", label: "分解者", x: 0.40, y: 0.82, color: "rgba(161,136,127,0.9)" }
       ];
       const LINKS = [["grass", "hopper"], ["grass", "rabbit"], ["hopper", "frog"], ["frog", "snake"], ["rabbit", "hawk"], ["snake", "hawk"], ["grass", "decomp"]];
       // 移除某物種後各物種的新平衡(相對原本的倍數):營養級聯的教學簡化
@@ -428,7 +428,7 @@
             CK.webNode(ctx, n.x * W, n.y * H, n.label, n.color, r);
             if (kill === n.id) D.ring(ctx, n.x * W, n.y * H, r + 5, "#e57373", 2.4, [4, 3]);
           });
-          D.text(ctx, kill === "none" ? "完整食物網:每條路徑都有備援" : "已移除「" + nodeById(kill).label + "」(紅圈):網絡重新洗牌", W * 0.26, H * 0.96, { color: kill === "none" ? PL.col("text-faint") : "#e57373", size: 10.5, align: "center" });
+          D.text(ctx, kill === "none" ? "完整食物網:每條路徑都有備援" : "已移除「" + nodeById(kill).label + "」(紅圈):網絡重新洗牌", W * 0.26, H * 0.93, { color: kill === "none" ? PL.col("text-faint") : "#e57373", size: 10.5, align: "center" });
           CK.panel(ctx, W * 0.55, H * 0.10, W * 0.40, H * 0.80, "生物量(相對原本)");
           const meterRows = [["植被(草)", frac.grass, "#66bb6a"], ["草食動物(蝗蟲+兔)", (frac.hopper + frac.rabbit) / 2, "#7986cb"], ["頂層掠食者(鷹)", frac.hawk, "#e57373"]];
           meterRows.forEach(([lab, f, c], i) => {

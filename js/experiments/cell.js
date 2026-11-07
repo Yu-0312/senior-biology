@@ -107,7 +107,7 @@
           const clarity = Math.max(frontA, backA);
           const viewD = 18 - Math.log10(mag) * 3.4; // 視野直徑（mm，示意）
           // 顯微鏡
-          CK.microscope(ctx, W * 0.24, H * 0.80, H * 0.0042, {
+          CK.microscope(ctx, W * 0.24, H * 0.82, H * 0.0030, {
             activeMag: [40, 100, 400][obj] === 40 ? 4 : [40, 100, 400][obj] === 100 ? 10 : 40,
             revolve: obj * 0.4, mag: mag, slideLabel: "洋蔥表皮"
           });

@@ -127,7 +127,11 @@
           const curve = mkCurve(env, s), pNow = curve[gens][1];
           // 樹幹與椒花蛾:與樹幹同色的個體不透明=偽裝良好
           const tx = W * 0.09, ty = H * 0.16, tw = W * 0.12, th = H * 0.70;
-          D.disc(ctx, tx + tw / 2, ty - 10, tw * 0.62, { fill: env === "sooty" ? "rgba(90,96,88,0.5)" : "rgba(110,150,90,0.45)" });
+          // 樹冠:三片疊圓,顏色隨環境(煤煙→暗褐,乾淨→綠)
+          const fol = env === "sooty" ? ["rgba(74,64,52,0.9)", "rgba(60,52,42,0.9)", "rgba(84,72,58,0.9)"] : ["rgba(86,138,72,0.9)", "rgba(70,120,60,0.9)", "rgba(100,150,80,0.9)"];
+          [[-0.5, -0.30], [0.5, -0.32], [0, -0.62]].forEach(([dx, dy], k) => {
+            D.disc(ctx, tx + tw / 2 + dx * tw, ty - 10 + dy * tw, tw * (0.52 - k * 0.06), { fill: fol[k] });
+          });
           D.rect(ctx, tx, ty, tw, th, { fill: env === "sooty" ? "#503522" : "#a0805a", r: 6 });
           const nDark = Math.round(pNow * 8);
           for (let i = 0; i < 8; i++) {
